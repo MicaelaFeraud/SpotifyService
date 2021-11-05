@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class Artist {
     private Long idArtist;
     private String name;
-    private String genere;
+    private String genre;
     private String image;
 }
