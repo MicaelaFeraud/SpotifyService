@@ -11,8 +11,8 @@ import java.util.List;
 public class AlbumConfiguration {
     @Bean(name = "albums")
     public List<Album> getAlbum(){
-        return Arrays.asList(Album.builder().idAlbum(120L).name("YNTAR").build(),
-                Album.builder().idAlbum(130L).name("Tururu").build(),
-                Album.builder().idAlbum(140L).name("Mio Mio").build());
+        return Arrays.asList(Album.builder().name("YNTAR").build(),
+                Album.builder().name("Tururu").build(),
+                Album.builder().name("Mio Mio").build());
     }
 }

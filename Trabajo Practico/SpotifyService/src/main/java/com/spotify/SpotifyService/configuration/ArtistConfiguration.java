@@ -11,8 +11,8 @@ import java.util.List;
 public class ArtistConfiguration {
     @Bean(name = "artists")
     public List<Artist> getArtist(){
-        return Arrays.asList(Artist.builder().idArtist(100L).name("Noria").genere("Limbo").image("jijiiji").build(),
-                Artist.builder().idArtist(200L).name("Micho").genere("POP").image("hohohoho").build(),
-                Artist.builder().idArtist(300L).name("Youyou").genere("Trap").image("dudududu").build());
+        return Arrays.asList(Artist.builder().name("Noria").genere("Limbo").image("jijiiji").build(),
+                Artist.builder().name("Micho").genere("POP").image("hohohoho").build(),
+                Artist.builder().name("Youyou").genere("Trap").image("dudududu").build());
     }
 }

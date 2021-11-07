@@ -7,17 +7,14 @@ import com.spotify.SpotifyService.entidades.mapper.TrackMapper;
 import com.spotify.SpotifyService.entidades.model.Track;
 import com.spotify.SpotifyService.exception.TrackExistException;
 import com.spotify.SpotifyService.exception.TrackNotExistException;
+import com.spotify.SpotifyService.repository.TrackRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.lang.reflect.MalformedParameterizedTypeException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -26,36 +23,37 @@ public class TrackService implements ITrack {
     @Autowired
     private TrackMapper trackMapper;
 
+    @Autowired
+    private TrackRepository trackRepository;
+
     @Qualifier("tracks")
     @Autowired
     private List<Track> tracks;
 
+    private Map<Long, Track> trackMap = new HashMap<>();
+
     @PostConstruct
     public void init(){
-        trackMap = new HashMap<>();
         tracks.stream().forEach(track -> {
-            trackMap.put(track.getId(), track);
+            trackRepository.save(track);
         });
     }
 
-    private Map<Long, Track> trackMap;
-
-
     public Track getTrack(Long id) {
-        return trackMap.get(id);
+        return trackRepository.findById(id).get();
     }
 
-    public List<Track> getTrack() {
-        return new ArrayList<>(trackMap.values());
+    public Iterable<Track> getTrack() {
+        return trackRepository.findAll();
     }
 
     public Track createTrack(TrackRequest request) {
         Track track = trackMapper.apply(request);
-        if (trackMap.get(request.getId()) == null) {
-            trackMap.put(request.getId(), trackMapper.apply(request));
-        }else{
-            log.error("El track ya existe.");
+        if (request.getId() != null  && trackRepository.findById(request.getId()) != null) {
+            log.error("El Track ya existe");
             throw new TrackExistException("El track ya existe.");
+        }else{
+            trackRepository.save(trackMapper.apply(request));
         }
         return track;
     }
@@ -63,7 +61,7 @@ public class TrackService implements ITrack {
     @Override
     public Track editTrack(TrackRequest request, Long id) {
         Track track = null;
-        if (trackMap.get(id) != null){
+        if (trackRepository.findById(id) != null){
             track = trackMapper.apply(request);
             trackMap.remove(request.getId());
             trackMap.put(request.getId(), track);
@@ -75,6 +73,7 @@ public class TrackService implements ITrack {
     }
 
     public Track deteleTrack(Long id) {
-        return trackMap.remove(id);
+        trackRepository.deleteById(id);
+        return null;
     }
 }
