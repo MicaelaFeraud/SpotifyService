@@ -1,18 +1,40 @@
 package com.spotify.SpotifyService.configuration;
-
+import com.spotify.SpotifyService.Service.TrackService;
+import com.spotify.SpotifyService.controller.request.TrackRequest;
 import com.spotify.SpotifyService.entidades.model.Track;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-
-@Configuration
+@RestController
+@RequestMapping(path = "/track")
 public class TrackConfiguration {
-    @Bean(name = "tracks")
-    public List<Track> getTrack(){
-        return Arrays.asList(Track.builder().name("Ya no te amo Raul").reproduction(100000L).duration("3:05").build(),
-                Track.builder().name("S.O.S").reproduction(410000L).duration("1:50").build(),
-                Track.builder().name("Ruina").reproduction(90000L).duration("2:30").build());
+
+    @Autowired
+    private TrackService trackService;
+
+    @GetMapping(path = "/{id}")
+    public Track retriveTrack(@PathVariable("id") Long id){
+        return trackService.getTrack(id);
+    }
+
+    @GetMapping(path = "/")
+    public Iterable<Track> retriveTrack(){
+        return trackService.getTrack();
+    }
+
+    @PostMapping(path = "/")
+    public Track createTrack(@Validated @RequestBody TrackRequest request){
+        return trackService.createTrack(request);
+    }
+
+    @PostMapping(path = "/{id}")
+    public Track deteleTrack(@Validated @RequestBody TrackRequest request, @PathVariable("id") Long id){
+        return trackService.editTrack(request, id);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public Track deteleTrack(@PathVariable("id") Long id){
+        return trackService.deteleTrack(id);
     }
 }

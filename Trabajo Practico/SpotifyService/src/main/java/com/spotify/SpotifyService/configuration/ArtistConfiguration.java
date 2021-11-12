@@ -1,18 +1,40 @@
 package com.spotify.SpotifyService.configuration;
-
+import com.spotify.SpotifyService.Service.ArtistService;
+import com.spotify.SpotifyService.controller.request.ArtistRequest;
 import com.spotify.SpotifyService.entidades.model.Artist;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-
-@Configuration
+@RestController
+@RequestMapping(path = "/artist")
 public class ArtistConfiguration {
-    @Bean(name = "artists")
-    public List<Artist> getArtist(){
-        return Arrays.asList(Artist.builder().name("Noria").genere("Limbo").image("jijiiji").build(),
-                Artist.builder().name("Micho").genere("POP").image("hohohoho").build(),
-                Artist.builder().name("Youyou").genere("Trap").image("dudududu").build());
+
+    @Autowired
+    private ArtistService artistService;
+
+    @GetMapping(path = "/{id}")
+    public Artist retriveTrack(@PathVariable("idArtist") Long idArtist){
+        return artistService.getArtist(idArtist);
+    }
+
+    @GetMapping(path = "/")
+    public Iterable<Artist> retriveTrack(){
+        return artistService.getArtist();
+    }
+
+    @PostMapping(path = "/")
+    public Artist createArtist(@Validated @RequestBody ArtistRequest request){
+        return artistService.createArtist(request);
+    }
+
+    @PostMapping(path = "/{id}")
+    public Artist deteleArtist(@Validated @RequestBody ArtistRequest request, @PathVariable("idArtist") Long idArtist){
+        return artistService.editArtist(request, idArtist);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public Artist deteleArtist(@PathVariable("idArtist") Long idArtist){
+        return artistService.deteleArtist(idArtist);
     }
 }

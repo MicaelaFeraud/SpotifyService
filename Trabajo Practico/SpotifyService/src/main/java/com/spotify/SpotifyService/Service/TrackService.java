@@ -1,6 +1,4 @@
 package com.spotify.SpotifyService.Service;
-
-
 import com.spotify.SpotifyService.Service.impl.ITrack;
 import com.spotify.SpotifyService.controller.request.TrackRequest;
 import com.spotify.SpotifyService.entidades.mapper.TrackMapper;
@@ -12,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.PostConstruct;
 import java.util.*;
 
@@ -40,6 +37,7 @@ public class TrackService implements ITrack {
     }
 
     public Track getTrack(Long id) {
+
         return trackRepository.findById(id).get();
     }
 
@@ -49,7 +47,8 @@ public class TrackService implements ITrack {
 
     public Track createTrack(TrackRequest request) {
         Track track = trackMapper.apply(request);
-        if (request.getId() != null  && trackRepository.findById(request.getId()) != null) {
+        if (request.getId() != null  && trackRepository.
+                findById(request.getId()) != null) {
             log.error("El Track ya existe");
             throw new TrackExistException("El track ya existe.");
         }else{
