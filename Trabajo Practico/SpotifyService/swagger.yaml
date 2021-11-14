@@ -1,0 +1,240 @@
+swagger: "2.0"
+info:
+  description: "Spotify-service"
+  version: "1.0.0"
+  title: "Spotify Service"
+  contact:
+    email: "micaferaud@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:8085"
+tags:
+  - name: "track"
+    description: "Operations about track"
+  schemes:
+    - "https"
+    - "http"
+  paths:
+    /track:
+      post:
+        tags:
+          - "track"
+        summary: "Create a new track"
+        description: "Create a new track"
+        operationId: "newTrack"
+        produces:
+          - "applications/TrackRequest"
+        parameters:
+          - name: "TrackRequest"
+            in: "body"
+            description: "Track object"
+            required: true
+            schema:
+              $ref: "#/definitions/TrackRequest"
+        responses:
+          "201":
+            description: "Bad Request"
+            schema:
+              $ref: "#/definitions/TrackResponse"
+          "400":
+            description: "Bad Request"
+            schema:
+              $ref: "#/definitions/ErrorBadRequestResponse"
+          "404":
+            description: "Not Found"
+            schema:
+              $ref: "#/definitions/ErrorNotFoundResponse"
+          "500":
+            description: "Internal Server Error"
+            schema:
+              $ref: "#/definitions/ErrorInternalServerResponse"
+      put:
+        tags:
+          - "track"
+          summary: "Update an existing track"
+          description: ""
+          operationId: "updateTrack"
+          consumes:
+            - "application/json"
+            - "application/xml"
+          produces:
+            - "application/xml"
+            - "application/json"
+          parameters:
+            - in: "body"
+              name: "body"
+              description: "Track object that needs to be added to the store"
+              required: true
+              schema:
+                $ref: "#/definitions/Track"
+          responses:
+            "400":
+              description: "Invalid ID supplied"
+            "404":
+              description: "Validation exception"
+          security:
+            - spotify_auth:
+                - "write:track"
+                - "read:track"
+
+    /track/{trackId}:
+      get:
+        tags:
+          - "track"
+        summary: "Find track by ID"
+        description: "Returns a single track"
+        operacionId: "getTrackById"
+        produces:
+          - "application/xml"
+          - "application/json"
+        parameters:
+          - name: "trackId"
+            in: "path"
+            description: "ID of track to return"
+            required: true
+            type: "integer"
+            format: "int64"
+          responses:
+            "200":
+              description: "successful operation"
+              schema:
+                $ref: "#/definitions/Track"
+            "400":
+              description: "Invalid ID supplied"
+            "404":
+              description: "Track not found"
+          security:
+            - api_key: []
+      post:
+        tags:
+          - "track"
+        summary: "Updates a track in the Spotify with form data"
+        description: ""
+        operationId: "updateTrackWithForm"
+        consumes:
+          - "application/x-www-form-urlencoded"
+        produces:
+          - "application/xml"
+          - "application/json"
+        parameters:
+          - name: "trackId"
+            in: "path"
+            description: "ID of track that needs to be updated"
+            required: true
+            type: "integer"
+            format: "int64"
+          - name: "name"
+            in: "formData"
+            description: "Update name of the track"
+            required: false
+            type: "string"
+          - name: "reproduction"
+            in: "formData"
+            description: "Update reproduction of the track"
+            required: false
+            type: "long"
+          - name: "duration"
+            in: "formData"
+            description: "Update duration of the track"
+            required: false
+            type: "string"
+          responses:
+            "405":
+              description: "Invalid input"
+          security:
+            - spotify_auth:
+                - "write:tracks"
+                - "read:tracks"
+      detele:
+        tags:
+          - "track"
+        summary: "Delete a track"
+        description: ""
+        operationId: "deleteTrack"
+        produces:
+          - "application/xml"
+          - "application/json"
+        parameters:
+          - name: "api_key"
+            in: "header"
+            required: false
+            type: "string"
+          - name: "trackId"
+            in: "path"
+            description: "Track id to delete"
+            required: true
+            type: "integer"
+            format: "int64"
+          responses:
+            "400":
+              description: "Invalid ID supplied"
+            "404":
+              description: "Track not found"
+          security:
+            - spotify_auth:
+                - "write:tracks"
+                - "read:tracks"
+
+
+definitions:
+  TrackRequest:
+    type: "object"
+    required:
+      - "name"
+      - "artist"
+      - "album"
+      - "duration"
+    properties:
+      name:
+        type: "string"
+        example: "Metallica"
+      artist:
+        type: "string"
+        example: "Metallica"
+      album:
+        type: "string"
+        example: "... and justice for all"
+      duration:
+        type: "number"
+        example: 5
+  TrackResponse:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      artist:
+        type: "string"
+      album:
+        type: "string"
+      reproduction:
+        type: "string"
+      duration:
+        type: "string"
+
+    ErrorNotFoundResponse:
+      type: "object"
+      propeties:
+        code:
+          type: "string"
+          example: "string"
+        message:
+          type: "string"
+          example: "string"
+        result:
+          type: "string"
+          example: "string"
+    ErrorInternalServerResponse:
+      type: "object"
+      properties:
+        code:
+          type: "string"
+          example: "GENERIC_INTERNAL_SERVER_ERROR"
+        message:
+          type: "string"
+          example: "Internal Server Error"
+        result:
+          type: "string"
+          example: "GENERIC_INTERNAL_SERVER_ERROR"
